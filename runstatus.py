@@ -6,12 +6,6 @@ import sys, os
 pidfile = ".runner-pid"
 statusfilename = ".runner-status"
 
-file = 'tester'
-f = open(pidfile, "r")
-#f.write("hello world")
-
-print(f.read())
-
 #
 # open the pidfile and read the process id
 #    give an error message if file not found or bad pid

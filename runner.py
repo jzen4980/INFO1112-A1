@@ -1,8 +1,124 @@
 #!/usr/bin/env python3
 # -*- coding: ascii -*-
 
-import sys, os, time, datetime, signal
+import sys, os, time, datetime, signal, re
 
+# from datetime import datetime, timedelta
+
+# write pid to .runner-pid
+pid = os.getpid()
+f = open('.runner-pid', '+w')
+f.write(str(pid))
+f.close()
+
+
+# create class for our commands
+class Command:
+    def __init__(self, day, runtime, path, args, recurring=False):
+        self.day = day
+        self.runtime = runtime
+        self.path = path
+        self.args = args
+        self.recurring = recurring
+
+
+# reading configuration file
+conf_file = 'runner.conf'
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+# list from config file
+config_arr = []
+
+# split config commands from test example
+for i in open(os.path.join(__location__, conf_file)):
+    if i == '\n':
+        break
+    else:
+        config_arr.append(i.strip())
+
+#extracts important info out of config commands
+def extract(input):
+    recurring = False
+    days = []
+    # extracts timespec
+    timespec = input.partition('at')[0].split()
+    recurring = False
+    if timespec:
+        if timespec[0] == 'every':
+            recurring = True
+        days = timespec[1].strip().split(',')
+    # extracts runtime
+    runtime = input.partition('at')[2].partition('run')[0].strip().split(',')
+    #extracts path
+    path = input.partition('run')[2].strip().split()[0]
+    #extracts args
+    args = input.partition(path)[2].strip()
+    return days, runtime, path, args, recurring
+
+test_arr = []
+for i in config_arr:
+    #print(i)
+    raw = extract(i)
+    print(extract(i))
+
+
+
+
+
+# #split config commands into 3 categories
+# at_list = []
+# on_list = []
+# every_list = []
+#
+# for i in config_arr:
+#     if i.split()[0] == 'at':
+#         at_list.append(i)
+#     elif i.split()[0] == 'every':
+#         every_list.append(i)
+#     elif i.split()[0] == 'on':
+#         on_list.append(i)
+#     else:
+#         print('Grammar error.')
+#
+# print(config_arr)
+# print(at_list)
+# print(on_list)
+# print(every_list)
+#
+# # datetime, command, args, recurring flag?
+#
+# today = datetime.now()
+#
+# #print('today is', today)
+# #print(datetime.date())
+#
+# #array of commands - schedule to run
+# command_arr = []
+#
+# def at_converter(input):
+#     split_input = input.split()
+#     date = datetime.date()
+#     time = split_input[1]
+#     path = split_input[3]
+#     args = split_input[4:]
+#     for i in args:
+#         command = Command(time, path, i)
+#         command_arr.append(command)
+#
+#     print(date, time, path, args)
+#
+#
+# at_converter(at_list[1])
+# print(command_arr[0].runtime)
+
+# signal.setitimer()
+
+##while timedelta > 0: wait, else execute, pop
+
+
+##TODO take difference between schedule time and current time, and sleep, when time is up, run the program. start timing next program
+## to do this, we need to make list of datetimes, recurring, program
 """
 The configuration file for runner.py will contain one line for each program that is to be run.   Each line has the following parts: 
 
@@ -49,7 +165,3 @@ at 0900,1200 run /home/bob/myprog
 #
 # repeat until no more to records on the "run" list, then exit
 #
-
-
-
-
