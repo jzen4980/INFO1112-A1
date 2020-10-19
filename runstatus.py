@@ -3,8 +3,8 @@
 
 import sys, os
 
-pidfile = ".runner-pid"
-statusfilename = ".runner-status"
+pidfile = ".runner.pid"
+statusfilename = ".runner.status"
 
 
 #
