@@ -3,7 +3,8 @@
 
 import sys, os, time, datetime, signal, re
 
-# from datetime import datetime, timedelta
+from datetime import datetime as dt
+from datetime import date, timedelta
 
 # write pid to .runner-pid
 pid = os.getpid()
@@ -12,14 +13,21 @@ f.write(str(pid))
 f.close()
 
 
-# create class for our commands
+# create class for our commands - this holds all important information we need to run our processes
 class Command:
-    def __init__(self, day, runtime, path, args, recurring=False):
-        self.day = day
-        self.runtime = runtime
+    def __init__(self, scheduleDatetime, path, args, recurring, atFlag, ranFlag=False):
+        # time process is scheduled to run
+        self.scheduleDatetime = scheduleDatetime
+        # path of process to be run
         self.path = path
+        # args of process to be run
         self.args = args
+        # flag for whether process should recur?
         self.recurring = recurring
+        # flag for whether a command starts with 'at' - this impacts how we handle time pass cases
+        self.atFlag = atFlag
+        # flag for whether process has run
+        self.ranFlag = ranFlag
 
 
 # reading configuration file
@@ -37,84 +45,152 @@ for i in open(os.path.join(__location__, conf_file)):
     else:
         config_arr.append(i.strip())
 
-#extracts important info out of config commands
+
+# extracts important info out of config commands
 def extract(input):
-    recurring = False
     days = []
     # extracts timespec
     timespec = input.partition('at')[0].split()
     recurring = False
+    atFlag = False
     if timespec:
         if timespec[0] == 'every':
             recurring = True
         days = timespec[1].strip().split(',')
+    else:
+        atFlag = True
     # extracts runtime
-    runtime = input.partition('at')[2].partition('run')[0].strip().split(',')
-    #extracts path
+    times = input.partition('at')[2].partition('run')[0].strip().split(',')
+    # extracts path
     path = input.partition('run')[2].strip().split()[0]
-    #extracts args
+    # extracts args
     args = input.partition(path)[2].strip()
-    return days, runtime, path, args, recurring
+    return days, times, path, args, recurring, atFlag
 
-test_arr = []
+
+##TODO outputs in form of 'will run at Tue Oct 20 ... (datetime) path args
+
+todayDateTime = datetime.datetime.now()
+todayDate = todayDateTime.date()
+
+print('Todays date:', todayDate)
+
+day_name2num = {"Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3, "Friday": 4, "Saturday": 5, "Sunday": 6}
+day_num2name = {0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday", 4: "Friday", 5: "Saturday", 6: "Sunday"}
+todayName = day_num2name[date.today().weekday()]
+todayNum = day_name2num[todayName]
+
+
+# converts raw days and times into datetime value
+def convertDatetime(rawDays, rawTimes):
+    times = []
+    dates = []
+    datetimes = []
+    # extract days
+    if rawDays:
+        for i in rawDays:
+            dayNum = int(day_name2num[i])
+            diff = dayNum - todayNum
+            runDate = todayDate + datetime.timedelta(days=diff)
+            dates.append(runDate)
+    # default to today
+    else:
+        dates.append(todayDate)
+    # print(dates)
+    for i in rawTimes:
+        hr = int(i[:2])
+        min = int(i[2:])
+        times.append(datetime.time(hr, min))
+    for i in dates:
+        for j in times:
+            datetimes.append(dt.combine(i, j))
+    return datetimes
+
+
+# this will store list of command objects
+command_list = []
+
 for i in config_arr:
-    #print(i)
-    raw = extract(i)
-    print(extract(i))
+    days, times, path, args, recurring, atFlag = extract(i)
+    scheduleDatetime = convertDatetime(days, times)
+    # creating command for each schedule datetime - stores in command_list
+    for j in scheduleDatetime:
+        command_list.append(Command(j, path, args, recurring, atFlag))
+
+# sorting command list
+command_list.sort(key=lambda x: x.scheduleDatetime)
+
+
+def runCommand(commands):
+    for i in commands:
+        today = todayDateTime
+        # find next process that hasnt been run
+        if i.ranFlag == True:
+            continue
+        # 'at' time pass condition - reschedule for tomorrow
+        if i.atFlag == True and today > i.scheduleDatetime:
+            i.scheduleDatetime += datetime.timedelta(days=1)
+            # print('at flag time pass')
+            break
+        # 'on/every' time pass condition - reschedule for next week
+        elif i.atFlag == False and today > i.scheduleDatetime:
+            i.scheduleDatetime += datetime.timedelta(weeks=1)
+            # print('time pass')
+            break
+        # schedules recurring process for next week
+        if i.recurring == True:
+            newScheduleDatetime = i.scheduleDatetime + datetime.timedelta(weeks=1)
+            command_list.append(Command(newScheduleDatetime, i.path, i.args, i.recurring, i.atFlag, i.ranFlag))
+
+        # print('command tb run:',i.scheduleDatetime, i.path, i.args, i.recurring, i.atFlag, i.ranFlag)
+        # sleep program until it's time to run next program
+        time.sleep((i.scheduleDatetime - today).total_seconds())
+        # do something
+        # print('command ran:',i.scheduleDatetime, i.path,i.args)
+        # mark process as done
+        i.ranFlag = True
+        break
+
+
+def run():
+    while True:
+        command_list.sort(key=lambda x: x.scheduleDatetime)
+        num_finished = 0
+        for i in command_list:
+            if i.ranFlag ==True:
+                num_finished +=1
+                #print('already ran',i.scheduleDatetime, i.path, i.args)
+        if num_finished == len(command_list):
+            break
+        else:
+            runCommand(command_list)
+
+run()
 
 
 
 
-
-# #split config commands into 3 categories
-# at_list = []
-# on_list = []
-# every_list = []
-#
+# # #TODO running os.fork
+# test_arr = []
 # for i in config_arr:
-#     if i.split()[0] == 'at':
-#         at_list.append(i)
-#     elif i.split()[0] == 'every':
-#         every_list.append(i)
-#     elif i.split()[0] == 'on':
-#         on_list.append(i)
+#     #print(i)
+#     raw = extract(i)
+#     print(raw)
+#     newpid = os.fork()
+#     if newpid == 0:
+#         print('hi im the child')
+#         time.sleep(5)
+#         # os.execl(raw[2], raw[3])
+#         sys.exit(99)
+#     elif newpid == -1:
+#         print('error has occurred')
+#         sys.exit(1)
 #     else:
-#         print('Grammar error.')
-#
-# print(config_arr)
-# print(at_list)
-# print(on_list)
-# print(every_list)
-#
-# # datetime, command, args, recurring flag?
-#
-# today = datetime.now()
-#
-# #print('today is', today)
-# #print(datetime.date())
-#
-# #array of commands - schedule to run
-# command_arr = []
-#
-# def at_converter(input):
-#     split_input = input.split()
-#     date = datetime.date()
-#     time = split_input[1]
-#     path = split_input[3]
-#     args = split_input[4:]
-#     for i in args:
-#         command = Command(time, path, i)
-#         command_arr.append(command)
-#
-#     print(date, time, path, args)
-#
-#
-# at_converter(at_list[1])
-# print(command_arr[0].runtime)
+#         print('im the parent')
+#         os.wait()
+#         pids = (os.getpid(),newpid)
+#         print("parent: %d, child: %d\n" % pids)
 
-# signal.setitimer()
-
-##while timedelta > 0: wait, else execute, pop
 
 
 ##TODO take difference between schedule time and current time, and sleep, when time is up, run the program. start timing next program
