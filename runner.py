@@ -120,6 +120,26 @@ for i in config_arr:
 # sorting command list
 command_list.sort(key=lambda x: x.scheduleDatetime)
 
+# #TODO running os.fork
+
+def runProcess(path, args):
+    # print(path,args)
+    newpid = os.fork()
+    if newpid == 0:
+        # print('hi im the child')
+        os.execl(path, args)
+        sys.exit(99)
+    elif newpid == -1:
+        print('error has occurred')
+        sys.exit(1)
+    else:
+        # print('im the parent')
+        os.wait()
+        # pids = (os.getpid(), newpid)
+        # print("parent: %d, child: %d\n" % pids)
+    return
+
+
 
 def runCommand(commands):
     for i in commands:
@@ -146,6 +166,9 @@ def runCommand(commands):
         # sleep program until it's time to run next program
         time.sleep((i.scheduleDatetime - today).total_seconds())
         # do something
+        print(i.scheduleDatetime)
+
+        runProcess(i.path, i.args)
         # print('command ran:',i.scheduleDatetime, i.path,i.args)
         # mark process as done
         i.ranFlag = True
@@ -170,26 +193,6 @@ run()
 
 
 
-# # #TODO running os.fork
-# test_arr = []
-# for i in config_arr:
-#     #print(i)
-#     raw = extract(i)
-#     print(raw)
-#     newpid = os.fork()
-#     if newpid == 0:
-#         print('hi im the child')
-#         time.sleep(5)
-#         # os.execl(raw[2], raw[3])
-#         sys.exit(99)
-#     elif newpid == -1:
-#         print('error has occurred')
-#         sys.exit(1)
-#     else:
-#         print('im the parent')
-#         os.wait()
-#         pids = (os.getpid(),newpid)
-#         print("parent: %d, child: %d\n" % pids)
 
 
 
