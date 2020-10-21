@@ -1,11 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: ascii -*-
 
-import sys, os
+import sys, os, signal
 
 pidfile = ".runner-pid"
 statusfilename = ".runner-status"
 
+f = open(pidfile, 'r')
+try:
+    pid = f.read()
+except FileNotFoundError:
+    print('File not found')
+except:
+    print('Error encountered')
+
+
+print(pid)
+os.kill(os.getpid(), signal.SIGUSR1)
 #
 # open the pidfile and read the process id
 #    give an error message if file not found or bad pid

@@ -73,7 +73,7 @@ def extract(input):
 todayDateTime = datetime.datetime.now()
 todayDate = todayDateTime.date()
 
-print('Todays date:', todayDate)
+#print('Todays date:', todayDate)
 
 day_name2num = {"Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3, "Friday": 4, "Saturday": 5, "Sunday": 6}
 day_num2name = {0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday", 4: "Friday", 5: "Saturday", 6: "Sunday"}
@@ -120,8 +120,7 @@ for i in config_arr:
 # sorting command list
 command_list.sort(key=lambda x: x.scheduleDatetime)
 
-# #TODO running os.fork
-
+# runs os.fork
 def runProcess(path, args):
     # print(path,args)
     newpid = os.fork()
@@ -166,7 +165,7 @@ def runCommand(commands):
         # sleep program until it's time to run next program
         time.sleep((i.scheduleDatetime - today).total_seconds())
         # do something
-        print(i.scheduleDatetime)
+        #print(i.scheduleDatetime)
 
         runProcess(i.path, i.args)
         # print('command ran:',i.scheduleDatetime, i.path,i.args)
@@ -188,9 +187,13 @@ def run():
         else:
             runCommand(command_list)
 
-run()
 
 
+def main():
+    run()
+
+if __name__ == "__main__":
+    main()
 
 
 
