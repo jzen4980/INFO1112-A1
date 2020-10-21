@@ -26,7 +26,7 @@ on Tuesday at 1100 run /bin/echo hello
 every Monday,Wednesday,Friday at 0900,1200,1500 run /home/bob/myscript.sh
 	every monday, wednesday and friday at 9am, noon and 3pm run myscript.sh
 at 0900,1200 run /home/bob/myprog
-	runs /home/bob/myprog every day at 9am and noon
+	runs /home/bob/myprog once  at 9am and noon
 
 
 """
