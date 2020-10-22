@@ -17,14 +17,14 @@ except:
     print('Error encountered')
 
 
-print(pid)
-os.kill(pid, signal.SIGUSR1)
+#print(pid)
 while True:
+    os.kill(pid, signal.SIGUSR1)
     file_size = os.stat(statusfilename).st_size
     if file_size > 0:
+        print(open(statusfilename, 'r').read())
         break
 
-print(open(statusfilename,'r').read())
 
 #
 # open the pidfile and read the process id
