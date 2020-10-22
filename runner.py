@@ -114,8 +114,9 @@ for i in config_arr:
     days, times, path, args, recurring, atFlag = extract(i)
     scheduleDatetime = convertDatetime(days, times)
     # creating command for each schedule datetime - stores in command_list
+    commnad_args = path + ' ' + args
     for j in scheduleDatetime:
-        command_list.append(Command(j, path, args, recurring, atFlag))
+        command_list.append(Command(j, path, commnad_args, recurring, atFlag))
 
 # sorting command list
 command_list.sort(key=lambda x: x.scheduleDatetime)
