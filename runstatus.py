@@ -19,7 +19,12 @@ except:
 
 print(pid)
 os.kill(pid, signal.SIGUSR1)
-
+while True:
+    file_size = os.stat(statusfilename).st_size
+    if file_size > 0:
+        break
+status = open(statusfilename, 'r')
+print(status.read())
 
 #
 # open the pidfile and read the process id
