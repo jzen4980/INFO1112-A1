@@ -8,7 +8,7 @@ statusfilename = ".runner-status"
 
 f = open(pidfile, 'r')
 try:
-    pid = f.read()
+    pid = int(f.read())
 except FileNotFoundError:
     print('File not found')
 except:
@@ -21,7 +21,7 @@ os.kill(pid, signal.SIGUSR1)
 #print(signal.SIGUSR1)
 #os.kill(pid, )
 
-os.fork()
+#os.fork()
 
 #
 # open the pidfile and read the process id
