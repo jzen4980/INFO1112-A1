@@ -6,6 +6,7 @@ import sys, os, time, datetime, signal, re
 from datetime import datetime as dt
 from datetime import date, timedelta
 
+
 # create class for our commands - this holds all important information we need to run our processes
 class Command:
     def __init__(self, scheduleDatetime, path, args, recurring, atFlag, ranFlag=False):
@@ -90,6 +91,7 @@ def runProcess(path, args):
         # print("parent: %d, child: %d\n" % pids)
     return
 
+
 # runs the next command in the list
 def runCommand(commands):
     for i in commands:
@@ -124,6 +126,7 @@ def runCommand(commands):
         i.ranFlag = True
         break
 
+
 # this is the runner function
 def run():
     while True:
@@ -131,8 +134,8 @@ def run():
         num_finished = 0
         # count how many have been run
         for i in command_list:
-            if i.ranFlag ==True:
-                num_finished +=1
+            if i.ranFlag == True:
+                num_finished += 1
                 # print('already ran',i.scheduleDatetime, i.path, i.args)
         # finished iterating through the list
         if num_finished == len(command_list):
@@ -140,7 +143,6 @@ def run():
         else:
             # run next command
             runCommand(command_list)
-
 
 
 # write pid to .runner-pid
@@ -153,7 +155,6 @@ f.close()
 conf_file = 'runner.conf'
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
-
 
 todayDateTime = datetime.datetime.now()
 todayDate = todayDateTime.date()
@@ -181,7 +182,7 @@ for i in open(os.path.join(__location__, conf_file)):
 for i in config_arr:
     days, times, path, args, recurring, atFlag = extract(i)
     scheduleDatetime = convertDatetime(days, times)
-    command_args = [path]+ args
+    command_args = [path] + args
 
     # creating command for each schedule datetime - stores in command_list
     for j in scheduleDatetime:
@@ -190,6 +191,7 @@ for i in config_arr:
 # sorting command list
 command_list.sort(key=lambda x: x.scheduleDatetime)
 
+
 # signal catcher
 def signal_handler(sig, frame):
     print('Caught runstatus signal')
@@ -197,27 +199,17 @@ def signal_handler(sig, frame):
     for i in command_list:
         argstring = ''
         for j in i.args:
-            argstring += j+' '
+            argstring += j + ' '
         if i.ranFlag == True:
-            #f.write('ran', i.scheduleDatetime, argstring)
-            f.write('ran', i.scheduleDatetime, argstring)
+            f.write('ran' + time.ctime(i.scheduleDatetime.timestamp()) + argstring)
         else:
-            f.write('will run at', time.ctime(i.scheduleDatetime.timestamp()), argstring)
+            f.write('will run at' + time.ctime(i.scheduleDatetime.timestamp()) + argstring)
     f.close()
 
 
 if __name__ == "__main__":
     signal.signal(signal.SIGUSR1, signal_handler)
     run()
-
-
-
-
-
-
-
-
-
 
 ##TODO take difference between schedule time and current time, and sleep, when time is up, run the program. start timing next program
 ## to do this, we need to make list of datetimes, recurring, program
