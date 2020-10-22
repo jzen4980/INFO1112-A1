@@ -21,7 +21,7 @@ except:
 while True:
     os.kill(pid, signal.SIGUSR1)
     file_size = os.stat(statusfilename).st_size
-    print(type(file_size))
+    print(file_size)
     if file_size > 0:
         print(open(statusfilename, 'r').read())
         break
