@@ -203,7 +203,7 @@ def signal_handler(sig, frame):
         if i.ranFlag == True:
             f.write('ran' + time.ctime(i.scheduleDatetime.timestamp()) + argstring + '/n')
         else:
-            f.write('will run at' + time.ctime(i.scheduleDatetime.timestamp()) + argstring)
+            f.write('will run at' + time.ctime(i.scheduleDatetime.timestamp()) + argstring + '/n')
     f.close()
 
 
