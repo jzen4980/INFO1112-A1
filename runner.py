@@ -122,20 +122,20 @@ command_list.sort(key=lambda x: x.scheduleDatetime)
 
 # runs os.fork
 def runProcess(path, args):
-    # print(path,args)
+    print(path,args)
     newpid = os.fork()
     if newpid == 0:
-        # print('hi im the child')
+        print('hi im the child')
         os.execl(path, args)
         sys.exit(99)
     elif newpid == -1:
         print('error has occurred')
         sys.exit(1)
     else:
-        # print('im the parent')
+        print('im the parent')
         os.wait()
-        # pids = (os.getpid(), newpid)
-        # print("parent: %d, child: %d\n" % pids)
+        pids = (os.getpid(), newpid)
+        print("parent: %d, child: %d\n" % pids)
     return
 
 
@@ -168,7 +168,7 @@ def runCommand(commands):
         #print(i.scheduleDatetime)
 
         runProcess(i.path, i.args)
-        # print('command ran:',i.scheduleDatetime, i.path,i.args)
+        print('command ran:',i.scheduleDatetime, i.path,i.args)
         # mark process as done
         i.ranFlag = True
         break
@@ -181,7 +181,7 @@ def run():
         for i in command_list:
             if i.ranFlag ==True:
                 num_finished +=1
-                #print('already ran',i.scheduleDatetime, i.path, i.args)
+                print('already ran',i.scheduleDatetime, i.path, i.args)
         if num_finished == len(command_list):
             break
         else:
