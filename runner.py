@@ -190,14 +190,21 @@ for i in config_arr:
 # sorting command list
 command_list.sort(key=lambda x: x.scheduleDatetime)
 
-
+# signal catcher
 def signal_handler(sig, frame):
     print('Caught runstatus signal')
+    for i in command_list:
+        if i.ranFlag == True:
+            print()
     sys.exit(0)
 
 
 
 if __name__ == "__main__":
+
+    f = open("runner.status", "w")
+    f.write("hello world")
+    f.close()
     signal.signal(signal.SIGUSR1, signal_handler)
     run()
 

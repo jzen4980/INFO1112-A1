@@ -6,6 +6,8 @@ import sys, os, signal
 pidfile = ".runner-pid"
 statusfilename = ".runner-status"
 
+print(open(statusfilename,'r').read())
+
 f = open(pidfile, 'r')
 try:
     pid = int(f.read())
@@ -18,10 +20,6 @@ except:
 print(pid)
 os.kill(pid, signal.SIGUSR1)
 
-#print(signal.SIGUSR1)
-#os.kill(pid, )
-
-#os.fork()
 
 #
 # open the pidfile and read the process id
