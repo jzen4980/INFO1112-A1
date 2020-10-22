@@ -161,7 +161,7 @@ def runCommand(commands):
             newScheduleDatetime = i.scheduleDatetime + datetime.timedelta(weeks=1)
             command_list.append(Command(newScheduleDatetime, i.path, i.args, i.recurring, i.atFlag, i.ranFlag))
 
-        # print('command tb run:',i.scheduleDatetime, i.path, i.args, i.recurring, i.atFlag, i.ranFlag)
+        print('command tb run:',i.scheduleDatetime, i.path, i.args, i.recurring, i.atFlag, i.ranFlag)
         # sleep program until it's time to run next program
         time.sleep((i.scheduleDatetime - today).total_seconds())
         # do something
