@@ -113,7 +113,8 @@ command_list = []
 for i in config_arr:
     days, times, path, args, recurring, atFlag = extract(i)
     scheduleDatetime = convertDatetime(days, times)
-    command_args = [path].append(args)
+    command_args = [path]+ args
+
     # creating command for each schedule datetime - stores in command_list
     for j in scheduleDatetime:
         command_list.append(Command(j, path, command_args, recurring, atFlag))
@@ -124,8 +125,6 @@ command_list.sort(key=lambda x: x.scheduleDatetime)
 # runs os.fork
 def runProcess(path, args):
     print(path,args)
-    if args == None:
-        args = ' '
     newpid = os.fork()
     if newpid == 0:
         print('hi im the child')
