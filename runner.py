@@ -64,7 +64,7 @@ def extract(input):
     # extracts path
     path = input.partition('run')[2].strip().split()[0]
     # extracts args
-    args = input.partition(path)[2].strip()
+    args = input.partition(path)[2].strip().split()
     return days, times, path, args, recurring, atFlag
 
 
@@ -113,10 +113,10 @@ command_list = []
 for i in config_arr:
     days, times, path, args, recurring, atFlag = extract(i)
     scheduleDatetime = convertDatetime(days, times)
+    command_args = [path].append(args)
     # creating command for each schedule datetime - stores in command_list
-    commnad_args = path + ' ' + args
     for j in scheduleDatetime:
-        command_list.append(Command(j, path, commnad_args, recurring, atFlag))
+        command_list.append(Command(j, path, command_args, recurring, atFlag))
 
 # sorting command list
 command_list.sort(key=lambda x: x.scheduleDatetime)
@@ -129,7 +129,7 @@ def runProcess(path, args):
     newpid = os.fork()
     if newpid == 0:
         print('hi im the child')
-        os.execl(path, args)
+        os.execv(path, args)
         sys.exit(99)
     elif newpid == -1:
         print('error has occurred')
