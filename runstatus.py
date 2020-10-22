@@ -26,7 +26,7 @@ while True:
         break
 status_file = open(statusfilename, 'r')
 for i in status_file:
-    print(i.read())
+    print(i)
 
 #
 # open the pidfile and read the process id
