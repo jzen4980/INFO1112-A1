@@ -16,7 +16,7 @@ except:
 
 
 print(pid)
-#os.kill(pid, signal.SIGUSR1)
+os.kill(pid, signal.SIGUSR1)
 
 #print(signal.SIGUSR1)
 #os.kill(pid, )

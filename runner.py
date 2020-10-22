@@ -6,13 +6,6 @@ import sys, os, time, datetime, signal, re
 from datetime import datetime as dt
 from datetime import date, timedelta
 
-# write pid to .runner-pid
-pid = os.getpid()
-f = open('.runner-pid', '+w')
-f.write(str(pid))
-f.close()
-
-
 # create class for our commands - this holds all important information we need to run our processes
 class Command:
     def __init__(self, scheduleDatetime, path, args, recurring, atFlag, ranFlag=False):
@@ -28,22 +21,6 @@ class Command:
         self.atFlag = atFlag
         # flag for whether process has run
         self.ranFlag = ranFlag
-
-
-# reading configuration file
-conf_file = 'runner.conf'
-__location__ = os.path.realpath(
-    os.path.join(os.getcwd(), os.path.dirname(__file__)))
-
-# list from config file
-config_arr = []
-
-# split config commands from test example
-for i in open(os.path.join(__location__, conf_file)):
-    if i == '\n':
-        break
-    else:
-        config_arr.append(i.strip())
 
 
 # extracts important info out of config commands
@@ -68,19 +45,6 @@ def extract(input):
     return days, times, path, args, recurring, atFlag
 
 
-##TODO outputs in form of 'will run at Tue Oct 20 ... (datetime) path args
-
-todayDateTime = datetime.datetime.now()
-todayDate = todayDateTime.date()
-
-#print('Todays date:', todayDate)
-
-day_name2num = {"Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3, "Friday": 4, "Saturday": 5, "Sunday": 6}
-day_num2name = {0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday", 4: "Friday", 5: "Saturday", 6: "Sunday"}
-todayName = day_num2name[date.today().weekday()]
-todayNum = day_name2num[todayName]
-
-
 # converts raw days and times into datetime value
 def convertDatetime(rawDays, rawTimes):
     times = []
@@ -96,52 +60,37 @@ def convertDatetime(rawDays, rawTimes):
     # default to today
     else:
         dates.append(todayDate)
-    # print(dates)
+    # splits hrs and mins
     for i in rawTimes:
         hr = int(i[:2])
         min = int(i[2:])
         times.append(datetime.time(hr, min))
+    # creates list of all date and time combos
     for i in dates:
         for j in times:
             datetimes.append(dt.combine(i, j))
     return datetimes
 
 
-# this will store list of command objects
-command_list = []
-
-for i in config_arr:
-    days, times, path, args, recurring, atFlag = extract(i)
-    scheduleDatetime = convertDatetime(days, times)
-    command_args = [path]+ args
-
-    # creating command for each schedule datetime - stores in command_list
-    for j in scheduleDatetime:
-        command_list.append(Command(j, path, command_args, recurring, atFlag))
-
-# sorting command list
-command_list.sort(key=lambda x: x.scheduleDatetime)
-
 # runs os.fork
 def runProcess(path, args):
-    print(path,args)
+    # print(path,args)
     newpid = os.fork()
     if newpid == 0:
-        print('hi im the child')
+        # print('hi im the child')
         os.execv(path, args)
         sys.exit(99)
     elif newpid == -1:
         print('error has occurred')
         sys.exit(1)
     else:
-        print('im the parent')
+        # print('im the parent')
         os.wait()
         pids = (os.getpid(), newpid)
-        print("parent: %d, child: %d\n" % pids)
+        # print("parent: %d, child: %d\n" % pids)
     return
 
-
-
+# runs the next command in the list
 def runCommand(commands):
     for i in commands:
         today = todayDateTime
@@ -163,39 +112,96 @@ def runCommand(commands):
             newScheduleDatetime = i.scheduleDatetime + datetime.timedelta(weeks=1)
             command_list.append(Command(newScheduleDatetime, i.path, i.args, i.recurring, i.atFlag, i.ranFlag))
 
-        print('command tb run:',i.scheduleDatetime, i.path, i.args, i.recurring, i.atFlag, i.ranFlag)
+        # print('command tb run:',i.scheduleDatetime, i.path, i.args, i.recurring, i.atFlag, i.ranFlag)
         # sleep program until it's time to run next program
         time.sleep((i.scheduleDatetime - today).total_seconds())
         # do something
-        #print(i.scheduleDatetime)
+        # print(i.scheduleDatetime)
 
         runProcess(i.path, i.args)
-        print('command ran:',i.scheduleDatetime, i.path,i.args)
+        # print('command ran:',i.scheduleDatetime, i.path,i.args)
         # mark process as done
         i.ranFlag = True
         break
 
-
+# this is the runner function
 def run():
     while True:
         command_list.sort(key=lambda x: x.scheduleDatetime)
         num_finished = 0
+        # count how many have been run
         for i in command_list:
             if i.ranFlag ==True:
                 num_finished +=1
-                print('already ran',i.scheduleDatetime, i.path, i.args)
+                # print('already ran',i.scheduleDatetime, i.path, i.args)
+        # finished iterating through the list
         if num_finished == len(command_list):
             break
         else:
+            # run next command
             runCommand(command_list)
 
 
 
-def main():
-    run()
+# write pid to .runner-pid
+pid = os.getpid()
+f = open('.runner-pid', '+w')
+f.write(str(pid))
+f.close()
+
+# reading configuration file
+conf_file = 'runner.conf'
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+
+todayDateTime = datetime.datetime.now()
+todayDate = todayDateTime.date()
+
+# Constructing dictionaries for days of the week
+day_name2num = {"Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3, "Friday": 4, "Saturday": 5, "Sunday": 6}
+day_num2name = {0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday", 4: "Friday", 5: "Saturday", 6: "Sunday"}
+todayName = day_num2name[date.today().weekday()]
+todayNum = day_name2num[todayName]
+
+# this will store list of command objects
+command_list = []
+
+# list from config file
+config_arr = []
+
+# split config commands from test example
+for i in open(os.path.join(__location__, conf_file)):
+    if i == '\n':
+        break
+    else:
+        config_arr.append(i.strip())
+
+# extract important info from config file and convert them into commands
+for i in config_arr:
+    days, times, path, args, recurring, atFlag = extract(i)
+    scheduleDatetime = convertDatetime(days, times)
+    command_args = [path]+ args
+
+    # creating command for each schedule datetime - stores in command_list
+    for j in scheduleDatetime:
+        command_list.append(Command(j, path, command_args, recurring, atFlag))
+
+# sorting command list
+command_list.sort(key=lambda x: x.scheduleDatetime)
+
+
+def signal_handler(sig, frame):
+    print('Caught runstatus signal')
+    sys.exit(0)
+
+
 
 if __name__ == "__main__":
-    main()
+    signal.signal(signal.SIGUSR1, signal_handler)
+    run()
+
+
 
 
 
