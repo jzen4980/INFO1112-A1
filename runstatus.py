@@ -16,7 +16,13 @@ except:
 
 
 print(pid)
-os.kill(os.getpid(), signal.SIGUSR1)
+#os.kill(pid, signal.SIGUSR1)
+
+#print(signal.SIGUSR1)
+#os.kill(pid, )
+
+os.fork()
+
 #
 # open the pidfile and read the process id
 #    give an error message if file not found or bad pid
