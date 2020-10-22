@@ -123,6 +123,8 @@ command_list.sort(key=lambda x: x.scheduleDatetime)
 # runs os.fork
 def runProcess(path, args):
     print(path,args)
+    if args == None:
+        args = ' '
     newpid = os.fork()
     if newpid == 0:
         print('hi im the child')
