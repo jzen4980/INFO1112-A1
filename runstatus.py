@@ -6,7 +6,7 @@ import sys, os, signal
 pidfile = ".runner-pid"
 statusfilename = ".runner-status"
 
-#print(open(statusfilename,'r').read())
+print(open(statusfilename,'r').read())
 
 f = open(pidfile, 'r')
 try:
