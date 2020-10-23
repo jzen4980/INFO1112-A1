@@ -25,6 +25,8 @@ while True:
     if read_flag:
         print(read_flag)
         print(open(statusfilename, 'r').read())
+
+
         break
 
 
