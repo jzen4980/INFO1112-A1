@@ -194,18 +194,16 @@ command_list.sort(key=lambda x: x.scheduleDatetime)
 
 # signal catcher
 def signal_handler(sig, frame):
-    # print('Caught runstatus signal')
-
+    print('Caught runstatus signal')
+    f = open(".runner-status", "+w")
     for i in command_list:
         argstring = ''
         for j in i.args:
             argstring += j + ' '
         if i.ranFlag == True:
-            f = open(".runner-status", "+w")
             f.write('ran ' + time.ctime(i.scheduleDatetime.timestamp()) + argstring + '\n')
             f.close()
         else:
-            f = open(".runner-status", "+w")
             f.write('will run at ' + time.ctime(i.scheduleDatetime.timestamp()) + argstring + '\n')
             f.close()
 

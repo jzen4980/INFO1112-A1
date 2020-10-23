@@ -17,13 +17,16 @@ except:
     print('Error encountered')
 
 os.kill(pid, signal.SIGUSR1)
+f.close()
 #print(pid)
 while True:
     file_size = os.stat(statusfilename).st_size
     # print(file_size)
     read_flag = file_size > 0
     if read_flag:
-        print(open(statusfilename, 'r').read())
+        status_file = open(statusfilename, 'r')
+        print(status_file.read())
+        status_file.close()
         break
 
 
