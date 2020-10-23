@@ -16,17 +16,16 @@ except FileNotFoundError:
 except:
     print('Error encountered')
 
-init_file_size = os.stat(statusfilename).st_size
-print(init_file_size)
+
 os.kill(pid, signal.SIGUSR1)
 f.close()
 # print(pid)
 
 while True:
-    # time.sleep(1)
+    time.sleep(1)
     file_size = os.stat(statusfilename).st_size
     print(file_size)
-    if file_size > init_file_size:
+    if file_size > 0:
         break
 status_file = open(statusfilename, 'r')
 print(status_file.read())
