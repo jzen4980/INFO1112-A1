@@ -77,22 +77,30 @@ def convertDatetime(rawDays, rawTimes):
 
 
 # runs os.fork
-def runProcess(path, args):
+def runProcess(path, args, datetime):
     # print(path,args)
-    newpid = os.fork()
-    if newpid == 0:
-        # print('hi im the child')
-        os.execv(path, args)
-        sys.exit(99)
-    elif newpid == -1:
-        print('error has occurred')
-        sys.exit(1)
-    else:
-        # print('im the parent')
-        os.wait()
-        pids = (os.getpid(), newpid)
-        # print("parent: %d, child: %d\n" % pids)
-    return
+    print("error", datetime, args)
+    try:
+        newpid = os.fork()
+        if newpid == 0:
+            # print('hi im the child')
+            os.execv(path, args)
+            sys.exit(99)
+        elif newpid == -1:
+            print('error has occurred')
+            sys.exit(1)
+        else:
+            # print('im the parent')
+            os.wait()
+            pids = (os.getpid(), newpid)
+            # print("parent: %d, child: %d\n" % pids)
+        return
+    except:
+        arg_string = ''
+        for i in args:
+            arg_string += i + ' '
+        print("error", time.ctime(datetime.timestamp()), arg_string)
+        sys.exit()
 
 
 # runs the next command in the list
@@ -121,10 +129,8 @@ def runCommand(commands):
         # sleep program until it's time to run next program
         time.sleep((i.scheduleDatetime - today).total_seconds())
         # do something
-        # print(i.scheduleDatetime)
 
-        runProcess(i.path, i.args)
-        # print('command ran:',i.scheduleDatetime, i.path,i.args)
+        runProcess(i.path, i.args, i.scheduleDatetime)
         # mark process as done
         i.ranFlag = True
         break
