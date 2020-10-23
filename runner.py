@@ -195,7 +195,7 @@ command_list.sort(key=lambda x: x.scheduleDatetime)
 # signal catcher
 def signal_handler(sig, frame):
     print('Caught runstatus signal')
-    f = open(".runner-status", "a")
+    f = open(".runner-status", "w")
     for i in command_list:
         argstring = ''
         for j in i.args:
