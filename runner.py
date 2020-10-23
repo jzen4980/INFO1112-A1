@@ -161,7 +161,8 @@ def run():
                 # print('already ran',i.scheduleDatetime, i.path, i.args)
         # finished iterating through the list
         if num_finished == len(command_list):
-            break
+            print("nothing left to run")
+            sys.exit()
         else:
             # run next command
             runCommand(command_list)
