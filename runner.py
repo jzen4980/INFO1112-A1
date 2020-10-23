@@ -45,7 +45,11 @@ def extract(input):
     # extracts runtime
     times = input.partition('at ')[2].partition('run')[0].strip().split(',')
     # extracts path
-    path = input.partition(' run ')[2].strip().split()[0]
+    try:
+        path = input.partition(' run ')[2].strip().split()[0]
+    except:
+        eprint("program path missing")
+        sys.exit()
     # extracts args
     args = input.partition(path)[2].strip().split()
     #print(days, times)
@@ -93,7 +97,7 @@ def convertDatetime(rawDays, rawTimes):
     # splits hrs and mins
     for i in rawTimes:
         # check time length
-        if len(i) > 4:
+        if len(i) != 4:
             eprint('incorrect time')
             sys.exit()
 
@@ -104,6 +108,11 @@ def convertDatetime(rawDays, rawTimes):
 
         hr = int(i[:2])
         min = int(i[2:])
+
+        #check time format
+        if hr > 23 or min > 59:
+            eprint('incorrect time')
+            sys.exit()
         times.append(datetime.time(hr, min))
     # creates list of all date and time combos
     for i in dates:
@@ -249,8 +258,17 @@ todayNum = day_name2num[todayName]
 # this will store list of command objects
 command_list = []
 
+# list of seen inputs for error handling
+seen_inputs = []
+
 # extract important info from config file and convert them into commands
 for i in config_arr:
+    if i in seen_inputs:
+        eprint("duplicate run time")
+        # continue - if we want to skip it and keep going
+        sys.exit()
+    seen_inputs.append(i)
+
     days, times, path, args, recurring, atFlag = extract(i)
     scheduleDatetime = convertDatetime(days, times)
     command_args = [path] + args
