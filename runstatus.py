@@ -8,14 +8,16 @@ statusfilename = ".runner-status"
 
 # print(open(statusfilename,'r').read())
 
-f = open(pidfile, 'r')
+
 try:
+    f = open(pidfile, 'r')
     pid = int(f.read())
 except FileNotFoundError:
-    print('File not found')
+    print('file runner-pid not found')
+    sys.exit()
 except:
-    print('Error encountered')
-
+    print('file runner-pid error encountered')
+    sys.exit()
 
 os.kill(pid, signal.SIGUSR1)
 f.close()
@@ -27,10 +29,17 @@ while True:
     # print(file_size)
     if file_size > 0:
         break
-status_file = open(statusfilename, 'r')
-print(status_file.read())
-status_file.close()
 
+try:
+    status_file = open(statusfilename, 'r')
+    print(status_file.read())
+    status_file.close()
+except FileNotFoundError:
+    print('file runner-status not found')
+    sys.exit()
+except:
+    print('file runner-status error encountered')
+    sys.exit()
 
 #
 # open the pidfile and read the process id
