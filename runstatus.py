@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: ascii -*-
 
-import sys, os, signal
+import sys, os, signal, time
 
 pidfile = ".runner-pid"
 statusfilename = ".runner-status"
@@ -20,10 +20,14 @@ except:
 #print(pid)
 while True:
     os.kill(pid, signal.SIGUSR1)
+    time.sleep(2)
     file_size = os.stat(statusfilename).st_size
     print(file_size)
+
     if file_size > 0:
-        print(open(statusfilename, 'r').read())
+        statusfile = open(statusfilename, 'r')
+        statusfile.read()
+        statusfile.close()
         break
 
 
