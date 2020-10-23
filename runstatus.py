@@ -23,10 +23,7 @@ while True:
     # print(file_size)
     read_flag = file_size > 0
     if read_flag:
-        print(read_flag)
         print(open(statusfilename, 'r').read())
-
-
         break
 
 
