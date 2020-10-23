@@ -3,7 +3,7 @@
 
 import sys, os, signal
 
-pidfile = "~/.runner-pid"
+pidfile = ".runner-pid"
 statusfilename = ".runner-status"
 
 #print(open(statusfilename,'r').read())
