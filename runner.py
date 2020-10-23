@@ -129,6 +129,19 @@ def runCommand(commands):
         i.ranFlag = True
         break
 
+# signal catcher
+def signal_handler(sig, frame):
+    # print('Caught runstatus signal')
+    f = open(".runner-status", "w+")
+    for i in command_list:
+        argstring = ''
+        for j in i.args:
+            argstring += j + ' '
+        if i.ranFlag == True:
+            f.write('ran ' + time.ctime(i.scheduleDatetime.timestamp()) + argstring + '\n')
+        else:
+            f.write('will run at ' + time.ctime(i.scheduleDatetime.timestamp()) + argstring + '\n')
+    f.close()
 
 # this is the runner function
 def run():
@@ -154,10 +167,32 @@ f = open('.runner-pid', '+w')
 f.write(str(pid))
 f.close()
 
+# list from config file
+config_arr = []
+
 # reading configuration file
 conf_file = 'runner.conf'
-__location__ = os.path.realpath(
-    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+try:
+    __location__ = os.path.realpath(
+        os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+    # split config commands from test example
+    for i in open(os.path.join(__location__, conf_file)):
+        if i == '\n':
+            break
+        else:
+            config_arr.append(i.strip())
+
+except:
+    # cant find config file
+    print("configuration file not found")
+    sys.exit()
+
+if len(config_arr) == 0:
+    # empty config
+    print("configuration file empty")
+    sys.exit()
+
 
 todayDateTime = datetime.datetime.now()
 todayDate = todayDateTime.date()
@@ -170,16 +205,6 @@ todayNum = day_name2num[todayName]
 
 # this will store list of command objects
 command_list = []
-
-# list from config file
-config_arr = []
-
-# split config commands from test example
-for i in open(os.path.join(__location__, conf_file)):
-    if i == '\n':
-        break
-    else:
-        config_arr.append(i.strip())
 
 # extract important info from config file and convert them into commands
 for i in config_arr:
@@ -194,20 +219,6 @@ for i in config_arr:
 # sorting command list
 command_list.sort(key=lambda x: x.scheduleDatetime)
 
-
-# signal catcher
-def signal_handler(sig, frame):
-    # print('Caught runstatus signal')
-    f = open(".runner-status", "w+")
-    for i in command_list:
-        argstring = ''
-        for j in i.args:
-            argstring += j + ' '
-        if i.ranFlag == True:
-            f.write('ran ' + time.ctime(i.scheduleDatetime.timestamp()) + argstring + '\n')
-        else:
-            f.write('will run at ' + time.ctime(i.scheduleDatetime.timestamp()) + argstring + '\n')
-    f.close()
 
 if __name__ == "__main__":
     signal.signal(signal.SIGUSR1, signal_handler)
