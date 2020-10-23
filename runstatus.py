@@ -22,6 +22,7 @@ while True:
     file_size = os.stat(statusfilename).st_size
     print(file_size)
     if file_size > 0:
+        print(file_size > 0)
         print(open(statusfilename, 'r').read())
         break
 
