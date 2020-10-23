@@ -3,7 +3,7 @@
 
 import sys, os, signal
 
-pidfile = ".runner-pid"
+pidfile = "~/.runner-pid"
 statusfilename = ".runner-status"
 
 #print(open(statusfilename,'r').read())
@@ -16,10 +16,9 @@ except FileNotFoundError:
 except:
     print('Error encountered')
 
-
+os.kill(pid, signal.SIGUSR1)
 #print(pid)
 while True:
-    os.kill(pid, signal.SIGUSR1)
     file_size = os.stat(statusfilename).st_size
     print(file_size)
     if file_size > 0:
