@@ -20,7 +20,7 @@ os.kill(pid, signal.SIGUSR1)
 
 f.close()
 # print(pid)
-time.sleep(2)
+time.sleep(1)
 while True:
     file_size = os.stat(statusfilename).st_size
     print(file_size)
