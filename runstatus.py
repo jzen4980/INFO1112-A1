@@ -20,9 +20,9 @@ os.kill(pid, signal.SIGUSR1)
 #print(pid)
 while True:
     file_size = os.stat(statusfilename).st_size
-    print(file_size)
+    # print(file_size)
     if file_size > 0:
-        #print(file_size > 0)
+        readflag = file_size > 0
         print(open(statusfilename, 'r').read())
         break
 
