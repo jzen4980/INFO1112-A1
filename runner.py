@@ -203,11 +203,11 @@ def signal_handler(sig, frame):
             argstring += j + ' '
         if i.ranFlag == True:
             f2 = open(".runner-status", "a")
-            f.write('ran ' + time.ctime(i.scheduleDatetime.timestamp()) + argstring + '\n')
+            f2.write('ran ' + time.ctime(i.scheduleDatetime.timestamp()) + argstring + '\n')
             f2.close()
         else:
             f2 = open(".runner-status", "a")
-            f.write('will run at ' + time.ctime(i.scheduleDatetime.timestamp()) + argstring + '\n')
+            f2.write('will run at ' + time.ctime(i.scheduleDatetime.timestamp()) + argstring + '\n')
             f2.close()
     f1.close()
 
