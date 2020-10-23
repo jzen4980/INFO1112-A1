@@ -28,6 +28,9 @@ def eprint(*args, **kwargs):
 
 # extracts important info out of config commands
 def extract(input):
+    if 'run' not in input:
+        eprint("no run keyword")
+        sys.exit()
     days = []
     # extracts timespec
     datespec = input.partition('at ')[0].split()
@@ -59,12 +62,28 @@ def convertDatetime(rawDays, rawTimes):
     #print(rawTimes)
     if rawDays:
         seen = []
+        # check for bad syntax
+        if 'every' in rawDays or ' on ' in rawDays:
+            eprint('bad syntax')
+            sys.exit()
         for i in rawDays:
+            # check for repeated days
             if i in seen:
                 eprint('repeated day')
                 sys.exit()
             seen.append(i)
-            dayNum = int(day_name2num[i])
+            # check for case
+            correct_case = i[0].upper() + i[1:].lower()
+            if i not in day_name2num and correct_case in day_name2num:
+                eprint('incorrect dayname (case is wrong)')
+                sys.exit()
+
+            # check for valid day
+            try:
+                dayNum = int(day_name2num[i])
+            except:
+                eprint("incorrect dayname")
+                sys.exit()
             diff = dayNum - todayNum
             runDate = todayDate + datetime.timedelta(days=diff)
             dates.append(runDate)
@@ -73,6 +92,16 @@ def convertDatetime(rawDays, rawTimes):
         dates.append(todayDate)
     # splits hrs and mins
     for i in rawTimes:
+        # check time length
+        if len(i) > 4:
+            eprint('incorrect time')
+            sys.exit()
+
+        # check time boundary
+        if int(i) > 2359:
+            eprint('times range from 0000 to 2359')
+            sys.exit()
+
         hr = int(i[:2])
         min = int(i[2:])
         times.append(datetime.time(hr, min))
