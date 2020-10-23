@@ -63,7 +63,7 @@ def convertDatetime(rawDays, rawTimes):
             if i in seen:
                 eprint('repeated day')
                 sys.exit()
-            seen.append()
+            seen.append(i)
             dayNum = int(day_name2num[i])
             diff = dayNum - todayNum
             runDate = todayDate + datetime.timedelta(days=diff)
