@@ -28,21 +28,22 @@ class Command:
 def extract(input):
     days = []
     # extracts timespec
-    timespec = input.partition('at')[0].split()
+    datespec = input.partition('at ')[0].split()
     recurring = False
     atFlag = False
-    if timespec:
-        if timespec[0] == 'every':
+    if datespec:
+        if datespec[0] == 'every':
             recurring = True
-        days = timespec[1].strip().split(',')
+        days = datespec[1].strip().split(',')
     else:
         atFlag = True
     # extracts runtime
-    times = input.partition('at')[2].partition('run')[0].strip().split(',')
+    times = input.partition('at ')[2].partition('run')[0].strip().split(',')
     # extracts path
-    path = input.partition('run')[2].strip().split()[0]
+    path = input.partition(' run ')[2].strip().split()[0]
     # extracts args
     args = input.partition(path)[2].strip().split()
+    #print(days, times)
     return days, times, path, args, recurring, atFlag
 
 
@@ -52,6 +53,8 @@ def convertDatetime(rawDays, rawTimes):
     dates = []
     datetimes = []
     # extract days
+    #print(rawDays)
+    #print(rawTimes)
     if rawDays:
         for i in rawDays:
             dayNum = int(day_name2num[i])
