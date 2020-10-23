@@ -6,17 +6,17 @@ import sys, os, signal, time
 pidfile = ".runner-pid"
 statusfilename = ".runner-status"
 
-# print(open(statusfilename,'r').read())
-
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 try:
     f = open(pidfile, 'r')
     pid = int(f.read())
 except FileNotFoundError:
-    print('file runner-pid not found')
+    eprint('file runner-pid not found')
     sys.exit()
 except:
-    print('file runner-pid error encountered')
+    eprint('file runner-pid error encountered')
     sys.exit()
 
 os.kill(pid, signal.SIGUSR1)
@@ -35,17 +35,17 @@ while True:
     elapsed = time.time() - begin
     # timeout
     if elapsed > 5:
-        print("status timeout")
+        eprint("status timeout")
         sys.exit()
 try:
     status_file = open(statusfilename, 'r')
-    print(status_file.read())
+    eprint(status_file.read())
     status_file.close()
 except FileNotFoundError:
-    print('file runner-status not found')
+    eprint('file runner-status not found')
     sys.exit()
 except:
-    print('file runner-status error encountered')
+    eprint('file runner-status error encountered')
     sys.exit()
 
 #

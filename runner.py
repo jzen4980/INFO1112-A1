@@ -23,6 +23,8 @@ class Command:
         # flag for whether process has run
         self.ranFlag = ranFlag
 
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 # extracts important info out of config commands
 def extract(input):
@@ -56,7 +58,12 @@ def convertDatetime(rawDays, rawTimes):
     #print(rawDays)
     #print(rawTimes)
     if rawDays:
+        seen = []
         for i in rawDays:
+            if i in seen:
+                eprint('repeated day')
+                sys.exit()
+            seen.append()
             dayNum = int(day_name2num[i])
             diff = dayNum - todayNum
             runDate = todayDate + datetime.timedelta(days=diff)
@@ -79,7 +86,7 @@ def convertDatetime(rawDays, rawTimes):
 # runs os.fork
 def runProcess(path, args, datetime):
     # print(path,args)
-    print("error", datetime, args)
+    eprint("error", datetime, args)
     try:
         newpid = os.fork()
         if newpid == 0:
@@ -87,7 +94,7 @@ def runProcess(path, args, datetime):
             os.execv(path, args)
             sys.exit(99)
         elif newpid == -1:
-            print('error has occurred')
+            eprint('error has occurred')
             sys.exit(1)
         else:
             # print('im the parent')
@@ -99,7 +106,7 @@ def runProcess(path, args, datetime):
         arg_string = ''
         for i in args:
             arg_string += i + ' '
-        print("error", time.ctime(datetime.timestamp()), arg_string)
+        eprint("error", time.ctime(datetime.timestamp()), arg_string)
         sys.exit()
 
 
@@ -192,12 +199,12 @@ try:
 
 except:
     # cant find config file
-    print("configuration file not found")
+    eprint("configuration file not found")
     sys.exit()
 
 if len(config_arr) == 0:
     # empty config
-    print("configuration file empty")
+    eprint("configuration file empty")
     sys.exit()
 
 
