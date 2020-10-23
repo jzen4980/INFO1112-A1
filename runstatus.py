@@ -6,7 +6,7 @@ import sys, os, signal
 pidfile = ".runner-pid"
 statusfilename = ".runner-status"
 
-#print(open(statusfilename,'r').read())
+# print(open(statusfilename,'r').read())
 
 f = open(pidfile, 'r')
 try:
@@ -18,16 +18,15 @@ except:
 
 os.kill(pid, signal.SIGUSR1)
 f.close()
-#print(pid)
+# print(pid)
 while True:
     file_size = os.stat(statusfilename).st_size
-    # print(file_size)
-    read_flag = file_size > 0
-    if read_flag:
-        status_file = open(statusfilename, 'r')
-        print(status_file.read())
-        status_file.close()
+    print(file_size)
+    if file_size > 0:
         break
+status_file = open(statusfilename, 'r')
+print(status_file.read())
+status_file.close()
 
 
 #
@@ -38,5 +37,3 @@ while True:
 # wait until it is non zero size, then read contents and copy to output, then quit.
 #
 # give error messages as necessary
-
-
