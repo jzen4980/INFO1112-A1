@@ -23,13 +23,20 @@ os.kill(pid, signal.SIGUSR1)
 f.close()
 # print(pid)
 
+# timer to see if 5 sec has elapsed
+begin = time.time()
+
 while True:
     time.sleep(1)
     file_size = os.stat(statusfilename).st_size
     # print(file_size)
-    if file_size > 0:
-        break
-
+    # if file_size > 0:
+    #     break
+    elapsed = time.time() - begin
+    # timeout
+    if elapsed > 5:
+        print("status timeout")
+        sys.exit()
 try:
     status_file = open(statusfilename, 'r')
     print(status_file.read())
