@@ -202,11 +202,11 @@ def signal_handler(sig, frame):
             argstring += j + ' '
         if i.ranFlag == True:
             f.write('ran ' + time.ctime(i.scheduleDatetime.timestamp()) + argstring + '\n')
-            # f.close()
+            f.close()
         else:
             f.write('will run at ' + time.ctime(i.scheduleDatetime.timestamp()) + argstring + '\n')
-            # f.close()
-    f.close()
+            f.close()
+    # f.close()
 
 if __name__ == "__main__":
     signal.signal(signal.SIGUSR1, signal_handler)
