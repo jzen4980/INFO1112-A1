@@ -24,7 +24,7 @@ f.close()
 while True:
     time.sleep(1)
     file_size = os.stat(statusfilename).st_size
-    print(file_size)
+    # print(file_size)
     if file_size > 0:
         break
 status_file = open(statusfilename, 'r')
